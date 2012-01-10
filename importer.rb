@@ -2,16 +2,20 @@
 
 require 'rubygems'
 require 'trac'
-require 'helpers.rb'
+require 'redmine'
+require 'helpers'
 
 
 
 trac = Trac.new(ENV['TRAC_USER'], ENV['TRAC_PASSWORD'], ENV['TRAC_HOST'], ENV['TRAC_DATABASE'])
+redmine = Redmine.new(ENV['REDMINE_USER'], ENV['REDMINE_PASSWORD'], ENV['REDMINE_HOST'], ENV['REDMINE_DATABASE'])
 
 begin
 
   latest_trac_ticket = trac.get_latest_ticket()
-#  latest_redmine_ticket = get_latest_redmine_ticket()
+  puts "Latest Trac ticket is #{latest_trac_ticket.id} with the subject '#{latest_trac_ticket.subject}'"
+  latest_redmine_ticket = redmine.get_latest_ticket()
+  puts "Latest Redmine ticket is #{latest_redmine_ticket.id} with the subject '#{latest_redmine_ticket.subject}'"
 
 #  while latest_redmine_ticket <= latest_trac_ticket
 #    if redmine_has_ticket(latest_redmine_ticket) == false
@@ -34,5 +38,6 @@ rescue Mysql::Error => e
 
 ensure
   trac.disconnect
+  redmine.disconnect
 end
 

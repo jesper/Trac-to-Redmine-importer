@@ -4,7 +4,8 @@ This is a script for migrating your tickets in Trac to Redmine. Although Redmine
 
 
 To import:
-Set the env variables: TRAC_USER, TRAC_PASSWORD, TRAC_HOST, TRAC_DATABASE
+Set the trac env variables: TRAC_USER, TRAC_PASSWORD, TRAC_HOST, TRAC_DATABASE
+Set the redmine env variables: REDMINE_USER, REDMINE_PASSWORD, REDMINE_HOST, REDMINE_DATABASE
 ruby importer.rb
 
 To test:
