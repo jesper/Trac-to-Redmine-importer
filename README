@@ -2,8 +2,10 @@
 
 This is a script for migrating your tickets in Trac to Redmine. Although Redmine includes a trac importer, I didn't find it customizable enough for my needs of completely cloning the trac tickets (including the same ID's, attachments, comments, etc"). In addition, since the Trac installation that I'm migrating from has some strange combinations of custom fields/etc, this felt extra necessary.
 
+
 To import:
+Set the env variables: TRAC_USER, TRAC_PASSWORD, TRAC_HOST, TRAC_DATABASE
 ruby importer.rb
 
 To test:
-ruby test.rb
+ruby tests.rb
