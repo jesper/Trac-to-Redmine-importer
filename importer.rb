@@ -3,9 +3,6 @@
 require 'rubygems'
 require 'trac'
 require 'redmine'
-require 'helpers'
-
-
 
 trac = Trac.new(ENV['TRAC_USER'], ENV['TRAC_PASSWORD'], ENV['TRAC_HOST'], ENV['TRAC_DATABASE'])
 redmine = Redmine.new(ENV['REDMINE_USER'], ENV['REDMINE_PASSWORD'], ENV['REDMINE_HOST'], ENV['REDMINE_DATABASE'])

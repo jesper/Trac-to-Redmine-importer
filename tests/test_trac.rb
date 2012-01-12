@@ -3,41 +3,9 @@
 require 'rubygems'
 require 'test/unit'
 require 'mysql'
-require 'trac'
-require 'redmine'
-require 'helpers'
 
-class Mysql::Result
-  def self.with_row(row)
-    @row = row
-    return self
-  end
-
-  def self.fetch_row
-    return @row
-  end
-end
-
-class Mysql
-  def self.real_connect(server,username,password,table)
-    return self
-  end
-
-  def self.query(query)
-    case query
-      when "select id from ticket order by id desc limit 1;"
-        return Mysql::Result.with_row(['123'])
-      when "select id,reporter,owner,type,status,component,priority,time,changetime,summary,description from ticket where id=123;"
-        return Mysql::Result.with_row(['123','author','assignee','type','status','project/category','priority','time_created','time_modified','subject','description'])
-      when "select value from ticket_custom where ticket=123 and name='bugtype'"
-        return Mysql::Result.with_row(['bugtype'])
-      when "select value from ticket_custom where ticket=123 and name='likelihood'"
-        return Mysql::Result.with_row(['likelihood'])
-      when "select login from users where id=1"
-        return Mysql::Result.with_row(['user'])
-     end
-  end
-end
+require './tests/mysql_stub.rb'
+require './trac.rb'
 
 
 class TestImporter < Test::Unit::TestCase
@@ -59,12 +27,12 @@ class TestImporter < Test::Unit::TestCase
     assert_equal('likelihood', ticket.likelihood)
   end
 
-  def test_trac_get_ticket_by_id
+  def test_get_ticket_by_id
     trac = Trac.new('username','password','server','database')
     verify_ticket(trac.get_ticket_by_id(123))
   end
 
-  def test_trac_get_latest_ticket
+  def test_get_latest_ticket
     trac = Trac.new('username','password','server','database')
     verify_ticket(trac.get_latest_ticket)
   end

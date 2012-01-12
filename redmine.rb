@@ -1,7 +1,6 @@
 require 'rubygems'
 require 'mysql'
-require 'helpers'
-require 'ticket'
+require './ticket.rb'
 
 class Redmine
 
@@ -28,6 +27,26 @@ class Redmine
   def get_latest_ticket()
     latest_id = @server.query('select id from issues order by id desc limit 1;').fetch_row[0]
     return get_ticket_by_id(latest_id)
+  end
+
+  def create_ticket(ticket)
+   puts 'tbd'
+  end
+
+  def create_comment(comment)
+    puts 'tbd'
+  end
+
+  def get_latest_ticket()
+    puts 'tbd'
+  end
+
+  def has_ticket(ticket)
+    puts 'tbd'
+  end
+
+  def get_comments_for_ticket(ticket)
+    puts 'tbd'
   end
 
   def disconnect

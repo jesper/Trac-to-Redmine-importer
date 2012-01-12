@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'mysql'
-require 'helpers'
-require 'ticket'
+
+require './ticket.rb'
 
 class Trac
 
