@@ -1,12 +1,13 @@
 #!/usr/bin/env ruby
 
+require './tests/simplecov.rb'
+
 require 'rubygems'
 require 'test/unit'
 require 'mysql'
 
-require './redmine.rb'
 require './tests/mysql_stub.rb'
-
+require './redmine.rb'
 
 class TestImporter < Test::Unit::TestCase
 

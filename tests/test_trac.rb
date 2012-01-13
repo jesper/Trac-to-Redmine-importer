@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require './tests/simplecov.rb'
+
 require 'rubygems'
 require 'test/unit'
 require 'mysql'
