@@ -6,7 +6,7 @@ require 'rubygems'
 require 'test/unit'
 require 'mysql'
 
-require './tests/mysql_stub.rb'
+require './tests/mysql_trac_stub.rb'
 require './trac.rb'
 
 

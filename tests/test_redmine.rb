@@ -6,7 +6,7 @@ require 'rubygems'
 require 'test/unit'
 require 'mysql'
 
-require './tests/mysql_stub.rb'
+require './tests/mysql_redmine_stub.rb'
 require './redmine.rb'
 
 class TestImporter < Test::Unit::TestCase

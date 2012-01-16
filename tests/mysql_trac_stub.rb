@@ -29,8 +29,8 @@ class Mysql
         return Mysql::Result.with_row(['bugtype'])
       when "select value from ticket_custom where ticket=123 and name='likelihood'"
         return Mysql::Result.with_row(['likelihood'])
-      when "select login from users where id=1"
-        return Mysql::Result.with_row(['user'])
+      else
+        return Mysql::Result.with_row([''])
      end
   end
 end
