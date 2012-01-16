@@ -32,8 +32,12 @@ class Mysql
         return Mysql::Result.with_row(['likelihood'])
       when "select login from users where id=1"
         return Mysql::Result.with_row(['user'])
-      else
-        return Mysql::Result.with_row([''])
+      when "select name from issue_categories where id=1"
+        return Mysql::Result.with_row(['category'])
+      when "select name from enumerations where id=1 and type='IssuePriority'"
+        return Mysql::Result.with_row(['priority'])
+       else
+        return Mysql::Result.with_row(['ERROR'])
      end
   end
 end

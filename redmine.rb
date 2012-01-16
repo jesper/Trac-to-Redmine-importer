@@ -14,17 +14,17 @@ class Redmine
     id = fields[0]
     author = find_user(fields[1])
     assignee = find_user(fields[2])
-    type = find_type(fields[3])
+    type = find_issue_type(fields[3])
     status = find_status(fields[4])
     project = find_project(fields[5])
     category = find_category(fields[6])
-    priority = find_priority(fields[6])
-    time_created = fields[7]
-    time_modified = fields[8]
-    subject = fields[9]
-    description = fields[10]
-    likelihood = find_likelihood(fields[11])
-    bugtype = find_bugtype(fields[12])
+    priority = find_priority(fields[7])
+    time_created = fields[8]
+    time_modified = fields[9]
+    subject = fields[10]
+    description = fields[11]
+    likelihood = find_likelihood(id)
+    bugtype = find_bugtype(id)
 
     return Ticket.new(id, author, assignee, type, status, project, category, priority, time_created, time_modified, subject, description, likelihood, bugtype)
   end
@@ -46,10 +46,12 @@ class Redmine
   end
 
   def find_user(id)
+    return '' if id.nil?
     return @server.query("select login from users where id=#{id}").fetch_row[0]
   end
 
   def find_priority(id)
+    return '' if id.nil?
     return @server.query("select name from enumerations where id=#{id} and type='IssuePriority'").fetch_row[0]
   end
 
@@ -62,6 +64,7 @@ class Redmine
   end
 
   def find_category(id)
+    return '' if id.nil?
     return @server.query("select name from issue_categories where id=#{id}").fetch_row[0]
   end
 
