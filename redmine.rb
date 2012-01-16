@@ -26,15 +26,23 @@ class Redmine
     likelihood = find_likelihood(field[11])
     bugtype = find_bugtype(field[12])
 
-#    return Ticket.new(id, author, assignee, type, status, project, category, priority, time_created, time_modified, subject, description, likelihood, bugtype)
+    return Ticket.new(id, author, assignee, type, status, project, category, priority, time_created, time_modified, subject, description, likelihood, bugtype)
+  end
+
+  def find_likelihood_id
+    return @server.query("select id from custom_fields where name='Likelihood';").fetch_row[0]
+  end
+
+  def find_bug_type_id
+    return @server.query("select id from custom_fields where name='Bug-Type';").fetch_row[0]
   end
 
   def find_likelihood(id)
-    puts 'tbd'
+    return @server.query("select value from custom_values where customized_id=#{id} and custom_field_id=#{find_likelihood_id};").fetch_row[0]
   end
 
   def find_bugtype(id)
-    puts 'tbd'
+    return @server.query("select value from custom_values where customized_id=#{id} and custom_field_id=#{find_bug_type_id};").fetch_row[0]
   end
 
   def find_user(id)
