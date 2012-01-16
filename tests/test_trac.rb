@@ -51,4 +51,5 @@ class TestImporter < Test::Unit::TestCase
     redmine = Redmine.new('username','password','server','database')
     assert_equal('user',redmine.find_user(1))
   end
+
 end
