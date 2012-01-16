@@ -4,12 +4,11 @@ require './tests/simplecov.rb'
 
 require 'rubygems'
 require 'test/unit'
-require 'mysql'
 
-require './tests/mysql_redmine_stub.rb'
+require './tests/mysql_stub.rb'
 require './redmine.rb'
 
-class TestImporter < Test::Unit::TestCase
+class TestRedmine < Test::Unit::TestCase
 
   def verify_ticket(ticket)
     assert_equal('123', ticket.id)

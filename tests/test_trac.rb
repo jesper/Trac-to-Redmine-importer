@@ -4,13 +4,11 @@ require './tests/simplecov.rb'
 
 require 'rubygems'
 require 'test/unit'
-require 'mysql'
 
-require './tests/mysql_trac_stub.rb'
+require './tests/mysql_stub.rb'
 require './trac.rb'
 
-
-class TestImporter < Test::Unit::TestCase
+class TestTrac < Test::Unit::TestCase
 
   def verify_ticket(ticket)
     assert_equal('123', ticket.id)
@@ -45,11 +43,6 @@ class TestImporter < Test::Unit::TestCase
     assert_equal(['project', 'component'], trac.convert_component_to_project_and_category('project/component'))
     assert_equal(['project', 'component-with-hyphens'], trac.convert_component_to_project_and_category('project/component-with-hyphens'))
     assert_equal(['project', 'component-with-funky_characters () & *'], trac.convert_component_to_project_and_category('project/component-with-funky_characters () & *'))
-  end
-
-  def test_redmine_find_author
-    redmine = Redmine.new('username','password','server','database')
-    assert_equal('user',redmine.find_user(1))
   end
 
 end
