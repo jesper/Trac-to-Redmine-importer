@@ -14,10 +14,12 @@ begin
   latest_redmine_ticket = redmine.get_latest_ticket()
   puts "Latest Redmine ticket is #{latest_redmine_ticket.id} with the subject '#{latest_redmine_ticket.subject}'"
 
-#  while latest_redmine_ticket <= latest_trac_ticket
-#    if redmine_has_ticket(latest_redmine_ticket) == false
+  while latest_redmine_ticket <= latest_trac_ticket
+    puts "Checking if Trac ticket #{latest_trac_ticket} exists in Redmine"
+    if redmine.has_ticket(latest_redmine_ticket) == false
+      puts "Redmine did not have the ticket, creating..."
 #      create_redmine_ticket(latest_trac_ticket)
-#    end
+    end
 
 #    comments_to_create_in_redmine = get_trac_comments_for_ticket(latest_redmine_ticket) - get_redmine_comments_for_ticket(latest_redmine_ticket)
 
@@ -25,8 +27,8 @@ begin
 #      create_redmine_comment(comment)
 #    end
 
-#    latest_redmine_ticket = get_trac_ticket_by_id(latest_redmine_ticket.id)
-#  end
+#    latest_redmine_ticket = get_trac_ticket_by_id(latest_redmine_ticket.id + 1)
+  end
 
 rescue Mysql::Error => e
   puts "Error code: #{e.errno}"

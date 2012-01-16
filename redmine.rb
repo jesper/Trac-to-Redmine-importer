@@ -86,7 +86,15 @@ class Redmine
   end
 
   def has_ticket(ticket)
-    puts 'tbd'
+    redmine_ticket = @server.query("select subject from issues where id=#{ticket.id};").fetch_row
+    if redmine_ticket.nil?
+      return false
+    end
+
+# Redmine has a ticket with the same ID, but not the same subject - either the importer has a bug, or your redmine database is polluted.
+    fail if redmine_ticket[0] != ticket.subject
+
+    return true
   end
 
   def get_comments_for_ticket(ticket)

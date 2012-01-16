@@ -1,7 +1,7 @@
 class Ticket
   attr_accessor :id, :author, :assignee, :type, :status, :project, :category, :priority, :time_created, :time_modified, :subject, :description, :likelihood, :bugtype
   def initialize(id, author, assignee, type, status, project, category, priority, time_created, time_modified, subject, description, likelihood, bugtype)
-    @id = id
+    @id = id.to_i
     @author = author
     @assignee = assignee
     @type = type
@@ -21,8 +21,12 @@ class Ticket
     @id == other.id
   end
 
-  def <(other)
-    @id < other.id
+  def <=(other)
+    @id <= other.id
+  end
+
+  def to_s
+    "ID[#{id}]-SUBJECT[#{subject}]"
   end
 end
 

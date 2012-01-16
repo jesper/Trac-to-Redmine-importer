@@ -36,7 +36,7 @@ class Mysql
         return Mysql::Result.with_row(['category'])
       when "select name from enumerations where id=1 and type='IssuePriority'"
         return Mysql::Result.with_row(['priority'])
-       else
+      else
         return Mysql::Result.with_row(['ERROR'])
      end
   end
