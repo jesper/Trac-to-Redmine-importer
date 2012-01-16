@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
-require 'trac'
-require 'redmine'
+require './trac.rb'
+require './redmine.rb'
 
 trac = Trac.new(ENV['TRAC_USER'], ENV['TRAC_PASSWORD'], ENV['TRAC_HOST'], ENV['TRAC_DATABASE'])
 redmine = Redmine.new(ENV['REDMINE_USER'], ENV['REDMINE_PASSWORD'], ENV['REDMINE_HOST'], ENV['REDMINE_DATABASE'])

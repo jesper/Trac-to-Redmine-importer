@@ -9,22 +9,22 @@ class Redmine
   end
 
   def get_ticket_by_id(id)
-    fields = @server.query("select id,author_id,assigned_to_id,tracker_id,status_id,project_id,category_id,priority_id,created_on,updated_on,subject,description from ticket where id=#{id};").fetch_row
+    fields = @server.query("select id,author_id,assigned_to_id,tracker_id,status_id,project_id,category_id,priority_id,created_on,updated_on,subject,description from issues where id=#{id};").fetch_row
 
     id = fields[0]
-    author = find_user(field[1])
-    assignee = find_user(field[2])
-    type = find_type(field[3])
-    status = find_status(field[4])
-    project = find_project(field[5])
-    category = find_category(field[6])
-    priority = find_priority(field[6])
-    time_created = field[7]
-    time_modified = field[8]
-    subject = field[9]
-    description = field[10]
-    likelihood = find_likelihood(field[11])
-    bugtype = find_bugtype(field[12])
+    author = find_user(fields[1])
+    assignee = find_user(fields[2])
+    type = find_type(fields[3])
+    status = find_status(fields[4])
+    project = find_project(fields[5])
+    category = find_category(fields[6])
+    priority = find_priority(fields[6])
+    time_created = fields[7]
+    time_modified = fields[8]
+    subject = fields[9]
+    description = fields[10]
+    likelihood = find_likelihood(fields[11])
+    bugtype = find_bugtype(fields[12])
 
     return Ticket.new(id, author, assignee, type, status, project, category, priority, time_created, time_modified, subject, description, likelihood, bugtype)
   end
