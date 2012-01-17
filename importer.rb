@@ -25,9 +25,11 @@ begin
 
     if redmine.has_ticket(latest_redmine_ticket) == false
       puts "Redmine did not have the ticket, creating..."
-      redmine.create_ticket(latest_trac_ticket)
+      redmine.create_ticket(latest_redmine_ticket)
     end
 
+    puts "Getting comments from Trac for #{latest_redmine_ticket}..."
+    trac.get_comments_for_ticket(latest_redmine_ticket)
 #    comments_to_create_in_redmine = get_trac_comments_for_ticket(latest_redmine_ticket) - get_redmine_comments_for_ticket(latest_redmine_ticket)
 
 #    for comment in comments_to_create_in_redmine

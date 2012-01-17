@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'mysql'
+
 require './ticket.rb'
+require './comment.rb'
 
 class Redmine
 

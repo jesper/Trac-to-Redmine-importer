@@ -2,6 +2,7 @@ require 'rubygems'
 require 'mysql'
 
 require './ticket.rb'
+require './comment.rb'
 
 class Trac
 
@@ -54,7 +55,18 @@ class Trac
   end
 
   def get_comments_for_ticket(ticket)
-    puts 'tbd'
+    comments_from_trac = @server.query("select time,author,newvalue from ticket_change where field='comment' and ticket=#{ticket.id}")
+    comments = Array.new
+
+    for comment in comments_from_trac
+# No sense in migrating empty comments or commit messages (redmine will automatically match them up via the repository
+      if comment[2].empty? || (comment[2] =~ /.*[fixes|refs] \##{ticket.id}.*/).nil? == false
+        next
+      end
+      comments.push(Comment.new(ticket.id, comment[0], comment[1], comment[2]))
+    end
+
+    return comments
   end
 
   def disconnect
