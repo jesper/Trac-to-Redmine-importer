@@ -73,12 +73,14 @@ class Redmine
   end
 
   def get_latest_ticket()
-    latest_id = @server.query('select id from issues order by id desc limit 1;').fetch_row[0]
-    return get_ticket_by_id(latest_id)
+    latest_id = @server.query('select id from issues order by id desc limit 1;').fetch_row
+
+    return nil if latest_id.nil?
+    return get_ticket_by_id(latest_id[0])
   end
 
   def create_ticket(ticket)
-   puts 'tbd'
+   puts 'TBD: Redmine::Create ticket'
   end
 
   def create_comment(comment)
@@ -92,7 +94,10 @@ class Redmine
     end
 
 # Redmine has a ticket with the same ID, but not the same subject - either the importer has a bug, or your redmine database is polluted.
-    fail if redmine_ticket[0] != ticket.subject
+
+    if redmine_ticket[0] != ticket.subject
+      fail "FATAL IMPORTER ERROR in Redmine::has_ticket! Incoming ticket ID:#{ticket.id} has subject '#{ticket.subject}' and Redmine ticket has subject '#{redmine_ticket[0]}'"
+    end
 
     return true
   end
