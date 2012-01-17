@@ -11,15 +11,15 @@ class Trac
   end
 
   def get_ticket_by_id(id)
-    fields = @server.query("select id,reporter,owner,type,status,component,priority,time,changetime,summary,description from ticket where id=#{id};").fetch_row
+    fields = @server.query("select id,version,reporter,owner,type,status,component,priority,time,changetime,summary,description from ticket where id=#{id};").fetch_row
 
     return nil if fields.nil?
 
-    project = convert_component_to_project_and_category(fields[5])[0]
-    category = convert_component_to_project_and_category(fields[5])[1]
+    project = convert_component_to_project_and_category(fields[6])[0]
+    category = convert_component_to_project_and_category(fields[6])[1]
     bugtype = get_bug_type(id)
     likelihood = get_likelihood(id)
-    return Ticket.new(fields[0], fields[1], fields[2], fields[3], fields[4], project, category, fields[6], fields[7], fields[8], fields[9], fields[10], likelihood, bugtype)
+    return Ticket.new(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], project, category, fields[7], fields[8], fields[9], fields[10], fields[11], likelihood, bugtype)
   end
 
   def get_bug_type(id)
@@ -60,7 +60,7 @@ class Trac
 
     for comment in comments_from_trac
 # No sense in migrating empty comments or commit messages (redmine will automatically match them up via the repository
-      if comment[2].empty? || (comment[2] =~ /.*(Deploy|deploy|fixes|refs|Refs|ReFs|Ref|ref|REfs|Fixes|Fix|see|closes|Closes).*\##{ticket.id}.*/).nil? == false
+      if comment[2].empty? || (comment[2] =~ /.*(Deploy|deploy|refs|Refs|ReFs|Ref|ref|REfs|fixes|Fixes|fix|Fix|see|closes|Closes).*\##{ticket.id}.*/).nil? == false
         next
       end
       comments.push(Comment.new(ticket.id, comment[0], comment[1], comment[2]))

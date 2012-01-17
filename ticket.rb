@@ -1,7 +1,8 @@
 class Ticket
-  attr_accessor :id, :author, :assignee, :type, :status, :project, :category, :priority, :time_created, :time_modified, :subject, :description, :likelihood, :bugtype
-  def initialize(id, author, assignee, type, status, project, category, priority, time_created, time_modified, subject, description, likelihood, bugtype)
+  attr_accessor :id, :version, :author, :assignee, :type, :status, :project, :category, :priority, :time_created, :time_modified, :subject, :description, :likelihood, :bugtype
+  def initialize(id, version, author, assignee, type, status, project, category, priority, time_created, time_modified, subject, description, likelihood, bugtype)
     @id = id.to_i
+    @version = version
     @author = author
     @assignee = assignee
     @type = type

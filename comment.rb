@@ -8,6 +8,6 @@ class Comment
   end
 
   def to_s
-    "(#{parent})#{time}[#{author}]:'#{text}'"
+    "PARENT[#{parent}]TIME[#{time}]AUTHOR[#{author}]TEXT[#{text}]"
   end
 end

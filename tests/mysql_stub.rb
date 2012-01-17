@@ -24,8 +24,8 @@ class Mysql
     case query
       when "select id from ticket order by id desc limit 1;"
         return Mysql::Result.with_row(['123'])
-      when "select id,reporter,owner,type,status,component,priority,time,changetime,summary,description from ticket where id=123;"
-        return Mysql::Result.with_row(['123','author','assignee','type','status','project/category','priority','time_created','time_modified','subject','description'])
+      when "select id,version,reporter,owner,type,status,component,priority,time,changetime,summary,description from ticket where id=123;"
+        return Mysql::Result.with_row(['123','version','author','assignee','type','status','project/category','priority','time_created','time_modified','subject','description'])
       when "select value from ticket_custom where ticket=123 and name='bugtype'"
         return Mysql::Result.with_row(['bugtype'])
       when "select value from ticket_custom where ticket=123 and name='likelihood'"
