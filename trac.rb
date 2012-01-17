@@ -60,7 +60,7 @@ class Trac
 
     for comment in comments_from_trac
 # No sense in migrating empty comments or commit messages (redmine will automatically match them up via the repository
-      if comment[2].empty? || (comment[2] =~ /.*[fixes|refs] \##{ticket.id}.*/).nil? == false
+      if comment[2].empty? || (comment[2] =~ /.*(Deploy|deploy|fixes|refs|Refs|ReFs|Ref|ref|REfs|Fixes|Fix|see|closes|Closes).*\##{ticket.id}.*/).nil? == false
         next
       end
       comments.push(Comment.new(ticket.id, comment[0], comment[1], comment[2]))

@@ -82,11 +82,11 @@ class Redmine
   end
 
   def create_ticket(ticket)
-   puts 'TBD: Redmine::Create ticket'
+   puts "TBD: Redmine::create_ticket(#{ticket})"
   end
 
   def create_comment(comment)
-    puts 'tbd'
+    puts "TBD: Redmine::create_comment(#{comment})"
   end
 
   def has_ticket(ticket)
@@ -105,7 +105,14 @@ class Redmine
   end
 
   def get_comments_for_ticket(ticket)
-    puts 'tbd'
+    comments_from_server = @server.query("select created_on,user_id,notes from journals where journalized_id=#{ticket.id};")
+    comments = Array.new
+
+    for comment in comments_from_server
+      comments.push(Comment.new(ticket.id, comment[0], find_user(comment[1]), comment[2]))
+    end
+
+    return comments
   end
 
   def disconnect

@@ -6,4 +6,8 @@ class Comment
     @author = author
     @text = text
   end
+
+  def to_s
+    "(#{parent})#{time}[#{author}]:'#{text}'"
+  end
 end

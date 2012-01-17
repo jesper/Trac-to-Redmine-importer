@@ -28,13 +28,15 @@ begin
       redmine.create_ticket(latest_redmine_ticket)
     end
 
-    puts "Getting comments from Trac for #{latest_redmine_ticket}..."
-    trac.get_comments_for_ticket(latest_redmine_ticket)
-#    comments_to_create_in_redmine = get_trac_comments_for_ticket(latest_redmine_ticket) - get_redmine_comments_for_ticket(latest_redmine_ticket)
+    comments = trac.get_comments_for_ticket(latest_redmine_ticket) - redmine.get_comments_for_ticket(latest_redmine_ticket)
 
-#    for comment in comments_to_create_in_redmine
-#      create_redmine_comment(comment)
-#    end
+    if (comments.count > 0)
+      puts "Redmine is missing #{comments.count} comments for ticket #{latest_redmine_ticket.id}, creating..."
+    end
+
+    for comment in comments
+      redmine.create_comment(comment)
+    end
 
     next_id = latest_redmine_ticket.id + 1
     latest_redmine_ticket = trac.get_ticket_by_id(next_id)
