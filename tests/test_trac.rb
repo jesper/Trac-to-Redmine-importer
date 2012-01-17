@@ -11,7 +11,7 @@ require './trac.rb'
 class TestTrac < Test::Unit::TestCase
 
   def verify_ticket(ticket)
-    assert_equal('123', ticket.id)
+    assert_equal(123, ticket.id)
     assert_equal('author', ticket.author)
     assert_equal('assignee', ticket.assignee)
     assert_equal('type', ticket.type)
