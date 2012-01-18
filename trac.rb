@@ -19,7 +19,7 @@ class Trac
     category = convert_component_to_project_and_category(fields[6])[1]
     bugtype = get_bug_type(id)
     likelihood = get_likelihood(id)
-    return Ticket.new(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], project, category, fields[7], fields[8], fields[9], fields[10], fields[11], likelihood, bugtype)
+    return Ticket.new(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], project, category, fields[7], Time.at(fields[8].to_i), Time.at(fields[9].to_i), fields[10], fields[11], likelihood, bugtype)
   end
 
   def get_bug_type(id)
@@ -46,6 +46,8 @@ class Trac
 
 
   def convert_component_to_project_and_category(component)
+    component = 'desktop/All plugins' if component == 'plugins'
+    component = 'web/watir' if component == 'watir'
     values = component.split('/', 2)
     if (values.length == 1)
       return values+['']

@@ -13,6 +13,7 @@ begin
   puts "Latest Trac ticket is #{latest_trac_ticket.id} with the subject '#{latest_trac_ticket.subject}'"
 
   latest_redmine_ticket = redmine.get_latest_ticket()
+
   if latest_redmine_ticket.nil?
     puts "Can't find any Redmine tickets - starting from scratch"
     latest_redmine_ticket = trac.get_earliest_ticket()
@@ -28,6 +29,8 @@ begin
       redmine.create_ticket(latest_redmine_ticket)
     end
 
+    #exit 1 if latest_redmine_ticket.id ==2
+
     comments = trac.get_comments_for_ticket(latest_redmine_ticket) - redmine.get_comments_for_ticket(latest_redmine_ticket)
 
     if (comments.count > 0)
@@ -42,7 +45,7 @@ begin
     latest_redmine_ticket = trac.get_ticket_by_id(next_id)
 
 # If the ticket doesn't exist in trac for some reason, keep looking for the next valid ID
-    while (latest_redmine_ticket.nil?)
+    while latest_redmine_ticket.nil?
       puts "Skipping #{next_id} since Trac doesn't seem to have any such ticket"
       next_id += 1
       latest_redmine_ticket = trac.get_ticket_by_id(next_id)

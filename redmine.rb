@@ -33,7 +33,9 @@ class Redmine
   end
 
   def find_version(id)
-    return @server.query("select name from versions where id=#{id};").fetch_row[0]
+    version = @server.query("select name from versions where id=#{id};").fetch_row
+    return nil if id.nil? or version.nil?
+    return version[0]
   end
 
   def find_likelihood_id
@@ -41,25 +43,31 @@ class Redmine
   end
 
   def find_bug_type_id
-    return @server.query("select id from custom_fields where name='Bug-Type';").fetch_row[0]
+    return @server.query("select id from custom_fields where name='Bug-Type';").fetch_row
   end
 
   def find_likelihood(id)
-    return @server.query("select value from custom_values where customized_id=#{id} and custom_field_id=#{find_likelihood_id};").fetch_row[0]
+    likelihood = @server.query("select value from custom_values where customized_id=#{id} and custom_field_id=#{find_likelihood_id};").fetch_row
+    return nil if id.nil? or likelihood.nil?
+    return likelihood[0]
   end
 
   def find_bugtype(id)
-    return @server.query("select value from custom_values where customized_id=#{id} and custom_field_id=#{find_bug_type_id};").fetch_row[0]
+    bugtype = @server.query("select value from custom_values where customized_id=#{id} and custom_field_id=#{find_bug_type_id};").fetch_row
+    return nil if bugtype.nil? or id.nil?
+    return bugtype[0]
   end
 
   def find_user(id)
-    return '' if id.nil?
-    return @server.query("select login from users where id=#{id}").fetch_row[0]
+    user = @server.query("select login from users where id=#{id}").fetch_row
+    return nil if id.nil? or user.nil?
+    return user[0]
   end
 
   def find_priority(id)
-    return '' if id.nil?
-    return @server.query("select name from enumerations where id=#{id} and type='IssuePriority'").fetch_row[0]
+    priority = @server.query("select name from enumerations where id=#{id} and type='IssuePriority'").fetch_row
+    return nil if id.nil? or priority.nil?
+    return priority[0]
   end
 
   def find_issue_type(id)
@@ -67,12 +75,15 @@ class Redmine
   end
 
   def find_status(id)
-    return @server.query("select name from issue_statuses where id=#{id}").fetch_row[0]
+    status = @server.query("select name from issue_statuses where id=#{id}").fetch_row
+    return nil if status.nil? or id.nil?
+    return status[0]
   end
 
   def find_category(id)
-    return '' if id.nil?
-    return @server.query("select name from issue_categories where id=#{id}").fetch_row[0]
+    category = @server.query("select name from issue_categories where id=#{id}").fetch_row
+    return '' if id.nil? or category.nil?
+    return category[0]
   end
 
   def find_project(id)
@@ -87,23 +98,21 @@ class Redmine
   end
 
   def create_ticket(ticket)
-   puts "TBD: Redmine::create_ticket(#{ticket})"
    id = ticket.id
    tracker_id = find_tracker_id(ticket.type)
    project_id = find_project_id(ticket.project)
    subject = ticket.subject
    description = ticket.description
    due_date = nil
-   category_id = find_category_id(ticket.category)
+   category_id = find_category_id(project_id, ticket.category)
    status_id = find_status_id(ticket.status)
    assigned_to_id = find_user_id(ticket.assignee)
    priority_id = find_priority_id(ticket.priority)
-   fixed_version_id = find_version_id(ticket.version)
+   fixed_version_id = find_version_id(project_id, ticket.time_created, ticket.version)
    author_id = find_user_id(ticket.author)
    lock_version = 0
    created_on = ticket.time_created
    updated_on = ticket.time_modified
-   start_date = ticket.time_created
    done_ratio = 0
    estimated_hours = 0
    parent_id = nil
@@ -111,34 +120,86 @@ class Redmine
    lft = 1
    rgt = 2
    is_private = 0
+
+   puts "ID: #{ticket.id} | #{id}"
+   puts "Tracker: #{ticket.type} | #{tracker_id}"
+   puts "Project: #{ticket.project} | #{project_id}"
+   puts "Subject: #{subject}"
+   puts "Description: #{description}"
+   puts "Category: #{ticket.category} | #{category_id}"
+   puts "Status: #{ticket.status} | #{status_id}"
+   puts "Assigned to: #{ticket.assignee} | #{assigned_to_id}"
+   puts "Priority: #{ticket.priority} | #{priority_id}"
+   puts "Version: #{ticket.version} | #{fixed_version_id}"
+   puts "Author: #{ticket.author} | #{author_id}"
+   query = @server.prepare("INSERT INTO issues (id, tracker_id, project_id, subject, description, category_id, status_id, assigned_to_id, priority_id, fixed_version_id, author_id, created_on, updated_on, lft, rgt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+   query.execute(id.to_s, tracker_id.to_s, project_id.to_s, subject, description, category_id.to_s, status_id.to_s, assigned_to_id.to_s, priority_id.to_s, fixed_version_id.to_s, author_id.to_s, created_on, updated_on, lft.to_s, rgt.to_s)
+   #TBD likelihood & bugtype
   end
 
   def find_status_id(status)
-    puts "TBD: Redmine::find_status_id(#{status})"
+    id = @server.query("select id from issue_statuses where name='#{status}';").fetch_row
+    if id.nil?
+      puts "Status #{status} not found - creating ..."
+      return find_status_id(status)
+    end
+
+    return id[0]
   end
 
-  def find_version_id(version)
-    puts "TBD: Redmine::find_version_id(#{version})"
+  def find_version_id(project_id,date,version)
+    return nil if version.nil? || version == ''
+    id = @server.query("select id from versions where project_id=#{project_id} and name='#{version}';").fetch_row
+
+    if id.nil?
+ #| id | project_id | name | description | effective_date | created_on          | updated_on          | wiki_page_title | status | sharing |
+      puts "Creating version #{version} for Project ID:#{project_id}"
+      @server.query("INSERT INTO versions (project_id, name, updated_on, created_on) VALUES (#{project_id}, '#{version}', '#{date}', '#{date}');");
+      return find_version_id(project_id, date, version)
+    end
+
+    return id
   end
 
   def find_priority_id(priority)
-    puts "TBD: Redmine::find_priority_id(#{priority})"
+    return nil if priority.nil?
+
+    id = @server.query("select id from enumerations where name='#{priority}' and type='IssuePriority' limit 1").fetch_row
+    if id.nil?
+      puts "Add priority #{priority}!"
+      return find_priority_id(priority)
+    end
+
+    return id[0]
   end
 
   def find_user_id(user)
-    puts "TBD: Redmine::find_user_id(#{user})"
+    id = @server.query("select id from users where login='#{user}';").fetch_row
+    return nil if user.nil? or id.nil?
+    return id
   end
 
-  def find_category_id(category)
-    puts "TBD: Redmine::find_category_id(#{category})"
+  def find_category_id(project_id,category)
+    return nil if category == ''
+
+    id = @server.query("select id from issue_categories where project_id='#{project_id}' and name='#{category}';").fetch_row
+
+    if id.nil?
+      puts "Missing Category #{category} for PROJECT ID:#{project_id} - Creating ..."
+      @server.query("INSERT INTO issue_categories (project_id, name) VALUES (#{project_id},'#{category}');")
+      return find_category_id(project_id, category)
+    end
+
+    return id[0]
   end
 
-  def find_tracker_id(type)
-    puts "TBD: Redmine::find_tracker_id(#{type})"
+  def find_tracker_id(tracker)
+    return @server.query("select id from trackers where name='#{tracker}' limit 1").fetch_row[0]
   end
 
   def find_project_id(project)
-    puts "TBD: Redmine::find_project_id(#{project})"
+    puts "Project: #{project}"
+    return @server.query("select id from projects where name='#{project}' limit 1").fetch_row[0]
   end
 
   def create_comment(comment)
