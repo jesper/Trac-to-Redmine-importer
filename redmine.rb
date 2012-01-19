@@ -98,43 +98,56 @@ class Redmine
   end
 
   def create_ticket(ticket)
-   id = ticket.id
-   tracker_id = find_tracker_id(ticket.type)
-   project_id = find_project_id(ticket.project)
-   subject = ticket.subject
-   description = ticket.description
-   due_date = nil
-   category_id = find_category_id(project_id, ticket.category)
-   status_id = find_status_id(ticket.status)
-   assigned_to_id = find_user_id(ticket.assignee)
-   priority_id = find_priority_id(ticket.priority)
-   fixed_version_id = find_version_id(project_id, ticket.time_created, ticket.version)
-   author_id = find_user_id(ticket.author)
-   lock_version = 0
-   created_on = ticket.time_created
-   updated_on = ticket.time_modified
-   done_ratio = 0
-   estimated_hours = 0
-   parent_id = nil
-   root_id = ticket.id
-   lft = 1
-   rgt = 2
-   is_private = 0
+    id = ticket.id
+    tracker_id = find_tracker_id(ticket.type)
+    project_id = find_project_id(ticket.project)
+    subject = ticket.subject
+    description = ticket.description
+    due_date = nil
+    category_id = find_category_id(project_id, ticket.category)
+    status_id = find_status_id(ticket.status)
+    assigned_to_id = find_user_id(ticket.assignee)
+    priority_id = find_priority_id(ticket.priority)
+    fixed_version_id = find_version_id(project_id, ticket.time_created, ticket.version)
+    author_id = find_user_id(ticket.author)
+    lock_version = 0
+    created_on = ticket.time_created
+    updated_on = ticket.time_modified
+    done_ratio = 0
+    estimated_hours = 0
+    parent_id = nil
+    root_id = ticket.id
+    lft = 1
+    rgt = 2
+    is_private = 0
 
-   puts "ID: #{ticket.id} | #{id}"
-   puts "Tracker: #{ticket.type} | #{tracker_id}"
-   puts "Project: #{ticket.project} | #{project_id}"
-   puts "Subject: #{subject}"
-   puts "Description: #{description}"
-   puts "Category: #{ticket.category} | #{category_id}"
-   puts "Status: #{ticket.status} | #{status_id}"
-   puts "Assigned to: #{ticket.assignee} | #{assigned_to_id}"
-   puts "Priority: #{ticket.priority} | #{priority_id}"
-   puts "Version: #{ticket.version} | #{fixed_version_id}"
-   puts "Author: #{ticket.author} | #{author_id}"
-   query = @server.prepare("INSERT INTO issues (id, tracker_id, project_id, subject, description, category_id, status_id, assigned_to_id, priority_id, fixed_version_id, author_id, created_on, updated_on, lft, rgt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-   query.execute(id.to_s, tracker_id.to_s, project_id.to_s, subject, description, category_id.to_s, status_id.to_s, assigned_to_id.to_s, priority_id.to_s, fixed_version_id.to_s, author_id.to_s, created_on, updated_on, lft.to_s, rgt.to_s)
-   #TBD likelihood & bugtype
+    puts "ID: #{ticket.id} | #{id}"
+    puts "Tracker: #{ticket.type} | #{tracker_id}"
+    puts "Project: #{ticket.project} | #{project_id}"
+    puts "Subject: #{subject}"
+    puts "Description: #{description}"
+    puts "Category: #{ticket.category} | #{category_id}"
+    puts "Status: #{ticket.status} | #{status_id}"
+    puts "Assigned to: #{ticket.assignee} | #{assigned_to_id}"
+    puts "Priority: #{ticket.priority} | #{priority_id}"
+    puts "Version: #{ticket.version} | #{fixed_version_id}"
+    puts "Author: #{ticket.author} | #{author_id}"
+    puts "Likelihood: #{ticket.likelihood} | #{author_id}"
+    puts "Bug-Type: #{ticket.bugtype} | #{author_id}"
+    query = @server.prepare("INSERT INTO issues (id, tracker_id, project_id, subject, description, category_id, status_id, assigned_to_id, priority_id, fixed_version_id, author_id, created_on, updated_on, lft, rgt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+    query.execute(id.to_s, tracker_id.to_s, project_id.to_s, subject, description, category_id.to_s, status_id.to_s, assigned_to_id.to_s, priority_id.to_s, fixed_version_id.to_s, author_id.to_s, created_on, updated_on, lft.to_s, rgt.to_s)
+    set_likelihood(ticket)
+    set_bugtype(ticket)
+  end
+
+  def set_likelihood(ticket)
+    return nil if ticket.likelihood.nil?
+    @server.query("INSERT INTO custom_values (customized_type,customized_id,custom_field_id,value) VALUES ('Issue',#{ticket.id},1,'#{ticket.likelihood}');")
+  end
+
+  def set_bugtype(ticket)
+    return nil if ticket.bugtype.nil?
+    @server.query("INSERT INTO custom_values (customized_type,customized_id,custom_field_id,value) VALUES ('Issue',#{ticket.id},2,'#{ticket.bugtype}');")
   end
 
   def find_status_id(status)
@@ -152,7 +165,6 @@ class Redmine
     id = @server.query("select id from versions where project_id=#{project_id} and name='#{version}';").fetch_row
 
     if id.nil?
- #| id | project_id | name | description | effective_date | created_on          | updated_on          | wiki_page_title | status | sharing |
       puts "Creating version #{version} for Project ID:#{project_id}"
       @server.query("INSERT INTO versions (project_id, name, updated_on, created_on) VALUES (#{project_id}, '#{version}', '#{date}', '#{date}');");
       return find_version_id(project_id, date, version)
@@ -175,8 +187,16 @@ class Redmine
 
   def find_user_id(user)
     id = @server.query("select id from users where login='#{user}';").fetch_row
-    return nil if user.nil? or id.nil?
-    return id
+    if id.nil?
+      puts "Missing user #{user} - Creating ..."
+      firstname = user.split('.')[0] || user
+      lastname = user.split('.')[1] || user
+
+      @server.query("INSERT INTO users (login,status,auth_source_id,created_on,type,firstname,lastname) VALUES ('#{user}', 1, 1, NOW(), 'User', '#{firstname.capitalize}', '#{lastname.capitalize}');")
+      return find_user_id(user)
+    end
+
+    return id[0]
   end
 
   def find_category_id(project_id,category)
@@ -203,7 +223,8 @@ class Redmine
   end
 
   def create_comment(comment)
-    puts "TBD: Redmine::create_comment(#{comment})"
+    query = @server.prepare("INSERT INTO journals (journalized_id, journalized_type, user_id, notes, created_on) VALUES (?, 'Issue', ?, ?, ?);")
+    query.execute(comment.parent, find_user_id(comment.author), comment.text, comment.time)
   end
 
   def has_ticket(ticket)

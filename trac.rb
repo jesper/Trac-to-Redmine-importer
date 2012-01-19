@@ -65,7 +65,7 @@ class Trac
       if comment[2].empty? || (comment[2] =~ /.*(Deploy|deploy|refs|Refs|ReFs|Ref|ref|REfs|fixes|Fixes|fix|Fix|see|closes|Closes).*\##{ticket.id}.*/).nil? == false
         next
       end
-      comments.push(Comment.new(ticket.id, comment[0], comment[1], comment[2]))
+      comments.push(Comment.new(ticket.id, Time.at(comment[0].to_i), comment[1], comment[2]))
     end
 
     return comments
